@@ -1,0 +1,12 @@
+com\siemens\siesam\data\HistoricalReadExecutor.class
+com\siemens\siesam\data\SensorListLog.class
+com\siemens\siesam\data\DistributeThread.class
+com\siemens\siesam\data\ItemState2ItemData.class
+com\siemens\siesam\data\OpcAsyncRealTimeRead$1.class
+com\siemens\siesam\data\InterfaceImpl.class
+com\siemens\siesam\data\OpcAsyncRealTimeRead.class
+com\siemens\siesam\data\JdbcConnection.class
+com\siemens\siesam\data\DataMain.class
+com\siemens\siesam\data\Result2ItemDataList.class
+com\siemens\siesam\data\OpcClient.class
+com\siemens\siesam\data\ServerInfo.class

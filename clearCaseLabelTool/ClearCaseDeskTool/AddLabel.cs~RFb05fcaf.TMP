@@ -1,0 +1,256 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ClearCaseDeskTool
+{
+    class AddLabel : CommandCaller
+    {
+        Dictionary<string, string> nameDirectoryMap;
+
+        public AddLabel(Dictionary<string, string> map) {
+
+            nameDirectoryMap = map;
+
+        }
+
+        async public void LabelOn() {
+
+            Dictionary<string, string> filesVersionResultMap = await getVersionResultMap();
+
+            //foreach (var singleEntry in filesVersionResultMap) {
+
+            //    string[] singleFileResult = singleEntry.Value.Split('\r');
+
+            //    foreach (string singleLine in singleFileResult) {
+
+            //        Console.WriteLine(singleLine);
+
+            //    }
+                
+
+            //}
+
+
+        }
+
+        async public Task<Dictionary<string, string>> getVersionResultMap() {
+
+            Process process = new Process();
+
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.FileName = "C:\\Program Files (x86)\\IBM\\RationalSDLC\\ClearCase\\bin\\cleartool.exe";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+
+            Dictionary<string, string> filesVersionResultMap = new Dictionary<string, string>();
+
+            foreach (var singleFileNameDirectory in nameDirectoryMap)
+            {
+
+                process.Start();
+
+                string result;
+
+                List<string> commandLines = new List<string>();
+
+                commandLines.Add("cd " + singleFileNameDirectory.Value);
+
+                commandLines.Add("lsvtree " + singleFileNameDirectory.Key);
+
+                commandLines.Add("exit");
+
+                result = await RunSingleCmdLineWithResult(commandLines, process);
+
+                filesVersionResultMap.Add(singleFileNameDirectory.Key, result);
+
+                process.Close();
+            }
+
+            return filesVersionResultMap;
+
+        }
+
+
+        //Since the version tree result from cleartool for a single file looks like this (label on last version):
+
+        //"setSubstDrive.pmlfnc@@\main
+        //setSubstDrive.pmlfnc@@\main\1 (IsoTools_V1.45)
+        //setSubstDrive.pmlfnc@@\main\2 (IsoTools_V1.46)
+        //setSubstDrive.pmlfnc@@\main\4 (IsoTools_V1.48)
+        //setSubstDrive.pmlfnc@@\main\6 (IsoTools_V1.50, IsoTools_V1.49)
+        //setSubstDrive.pmlfnc@@\main\8 (IsoTools_V1.52, IsoTools_V1.51)
+        //setSubstDrive.pmlfnc@@\main\9"
+
+        //or this (no label on last version):
+
+        //sieCleanAttributes.pmlfrm@@\main
+        //sieCleanAttributes.pmlfrm@@\main\1
+
+        //So we have to parse the version result of each file, getting the latest version label, 
+        //which In this case, is "IsoTools_V1.52".
+        //current version label should be "IsoTools_V1.53"
+        private Dictionary<string, string> GetCurrentVersionLabel(Dictionary<string,string> filesVersionResultMap) {
+
+            Dictionary<string, string> fileNameLabelMap = new Dictionary<string, string>();
+
+            foreach (var singleVersionTree in filesVersionResultMap)
+            {
+
+                string currentVersionTypeName = null;
+                string currentVersionNum = null;
+                string currentVersionLabel = null;
+
+
+                //split the result into lines
+                string[] labelArray = singleVersionTree.Value.Split('\r');
+                //get last version line, the third last line.
+                //for instance: 
+                string lastVersionLabelSingleLine = labelArray[labelArray.Length - 3];
+
+                string[] tempArray = lastVersionLabelSingleLine.Split('\\');
+                if (tempArray.Length == 2 && tempArray[1].Equals("main"))
+                {
+                    //Current version is the first version, no label on the last one
+
+                    
+
+
+
+                }
+                else
+                {
+                    //there is a label on last version
+                    string[] lastVersionLabelArray = tempArray[2].Split(' ');
+
+                    string lastVersionLabel = null;
+
+                    //pick the latest version label to lastVersionLabel
+                    //for instance: "(IsoTools_V1.45)" or "(IsoTools_V1.50," or "IsoTools_V1.49)"
+                    lastVersionLabel = lastVersionLabelArray[1];
+                    
+                    if (lastVersionLabel != null)
+                    {
+                        //if there is a label on last version
+
+                        //clean up the string
+                        if (lastVersionLabel.Contains("(") || lastVersionLabel.Contains(")")|| lastVersionLabel.Contains(","))
+                        {
+                            lastVersionLabel = lastVersionLabel.Replace("(", "");
+                            lastVersionLabel = lastVersionLabel.Replace(")", "");
+                            lastVersionLabel = lastVersionLabel.Replace(",", "");
+                        }
+
+
+                        string[] labelSplitWithDash = lastVersionLabel.Split('_');
+
+
+                        currentVersionTypeName = lastVersionLabel.Split('_')[0];
+
+                        //version numbers are always the last one, splited by "_"
+                        string labelVersionNum = labelSplitWithDash[labelSplitWithDash.Length-1];
+
+                        string[] labelVersionStringArray = labelVersionNum.Split('.');
+
+                        int[] labelVersionNumArray = new int[labelVersionStringArray.Length];
+
+                        int i = 0;
+
+                        foreach (string singleLabelNum in labelVersionStringArray)
+                        {
+
+                            labelVersionNumArray[i] = int.Parse(singleLabelNum);
+
+                            i++;
+
+                        }
+
+                        string[] currentVersionNumStringArray = GetCurrentVersionNum(labelVersionNumArray).Cast<string>().ToArray();
+
+                        IEnumerator<string> enumerator = (IEnumerator<string>)currentVersionNumStringArray.GetEnumerator();
+
+                        currentVersionNum = string.Join(",", currentVersionNumStringArray);
+
+                    }
+                }
+
+                currentVersionLabel = currentVersionTypeName + "_V" + currentVersionNum;
+                fileNameLabelMap.Add(singleVersionTree.Key, currentVersionLabel);
+
+            }
+            
+            return fileNameLabelMap;
+
+        }
+
+        private int[] GetCurrentVersionNum(int[] versionNumArray)
+        {
+
+            int[] currentVersionNum = new int[versionNumArray.Length];
+
+            if (versionNumArray.Length > 1)
+            {
+
+                string lastOneStringOriginal = versionNumArray[versionNumArray.Length - 1].ToString();
+
+                int lastOneDigitCountOriginal = lastOneStringOriginal.Length;
+
+                int lastDigitVersionNum = versionNumArray[versionNumArray.Length - 1] + 1;
+
+                if (lastDigitVersionNum.ToString().Length > lastOneDigitCountOriginal)
+                {
+
+                    //if there is a carry of lastDigitVersionNum
+                    int[] lowDigitVersionNumArray = new int[1];
+
+                    lowDigitVersionNumArray[0] = 0;
+
+                    int[] hignDigitVersionNumArrayOriginal = new int[versionNumArray.Length - 1];
+
+                    Array.Copy(versionNumArray, hignDigitVersionNumArrayOriginal, versionNumArray.Length - 1);
+
+                    currentVersionNum = MergerArray(GetCurrentVersionNum(hignDigitVersionNumArrayOriginal), lowDigitVersionNumArray);
+
+                }
+                else
+                {
+
+                    //No carry of lastDigitVersionNum
+                    int[] lowDigitVersionNumArray = new int[1];
+
+                    lowDigitVersionNumArray[0] = lastDigitVersionNum;
+
+                    int[] hignDigitVersionNumArrayOriginal = new int[versionNumArray.Length - 1];
+
+                    Array.Copy(versionNumArray, hignDigitVersionNumArrayOriginal, versionNumArray.Length - 1);
+
+                    currentVersionNum = MergerArray(hignDigitVersionNumArrayOriginal, lowDigitVersionNumArray);
+
+                }
+            }
+            else {
+
+                currentVersionNum[0] = versionNumArray[0] + 1;
+
+            }
+
+            return currentVersionNum;
+
+        }
+
+        private int[] MergerArray(int[] First, int[] Second)
+        {
+            int[] result = new int[First.Length + Second.Length];
+            First.CopyTo(result, 0);
+            Second.CopyTo(result, First.Length);
+            return result;
+        }
+
+
+    }
+}

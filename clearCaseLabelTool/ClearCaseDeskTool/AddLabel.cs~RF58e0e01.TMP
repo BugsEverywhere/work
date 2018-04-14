@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+
+namespace ClearCaseDeskTool
+{
+    class AddLabel : CommandCaller
+    {
+
+        private List<string> originalFilePathList;
+
+        private List<string> originalFileNameList;
+
+        private string folderPath;
+
+        public AddLabel(List<string> filePaths) {
+
+            originalFilePathList = filePaths;
+
+            originalFileNameList = new List<string>();
+
+            foreach (string singleFilePath in originalFilePathList) {
+
+                originalFileNameList.Add(Path.GetFileName(singleFilePath));
+
+            }
+
+            folderPath = Path.GetDirectoryName(filePaths[1]);
+
+        }
+
+        async public void labelOn() {
+
+            Process process = new Process();
+
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.Start();
+
+            string result;
+
+            result = await RunSingleCmdLineWithResult("cd "+folderPath, process);
+
+            Console.WriteLine(result);
+
+            result = await RunSingleCmdLineWithResult("cleartool", process);
+
+            Console.WriteLine(result);
+
+            result = await RunSingleCmdLineWithResult("mklbtype -nc LABEL_FOR_TEST", process);
+
+            Console.WriteLine(result);
+
+            cmdExeProcess.StandardInput.WriteLine("exit");
+
+            process.Close();
+
+        }
+
+
+
+
+    }
+}

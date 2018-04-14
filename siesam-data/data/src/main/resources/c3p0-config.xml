@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<c3p0-config>  
+    <named-config name="myc3p0xml">  
+        <property name="driverClass">com.osisoft.jdbc.Driver</property>  
+        <property name="jdbcUrl">jdbc:pioledb://192.168.1.133/Data Source=localhost;Integrated Security=SSPI</property>
+<<<<<<< HEAD
+        <property name="user">administrator</property>
+        <property name="password">123456</property>
+=======
+        <property name="user">dasheng</property>
+        <property name="password">12345678</property>
+>>>>>>> Springdev
+		
+		<property name="initialPoolSize">10</property>
+        <property name="maxPoolSize">30</property>
+        <property name="minPoolSize">5</property>   
+        <property name="maxIdleTime">150</property>  
+		<property name="acquireIncrement">3</property>
+		
+		<parameter>
+		<name>testConnectionOnCheckin</name>
+		<value>true</value>
+		</parameter>
+		
+		<parameter>
+		<name>idleConnectionTestPeriod</name>
+		<value>60</value>
+		</parameter>
+    </named-config>  
+</c3p0-config>  

@@ -1,0 +1,10 @@
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\bin\Debug\ClearCaseDeskTool.exe.config
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\bin\Debug\ClearCaseDeskTool.exe
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\bin\Debug\ClearCaseDeskTool.pdb
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\obj\Debug\ClearCaseDeskTool.Properties.Resources.resources
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\obj\Debug\ClearCaseDeskTool.csproj.GenerateResource.Cache
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\obj\Debug\ClearCaseDeskTool.csproj.CoreCompileInputs.cache
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\obj\Debug\ClearCaseDeskTool.exe
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\obj\Debug\ClearCaseDeskTool.pdb
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\obj\Debug\ClearCaseDeskTool.MainForm.resources
+C:\Users\z003m3xy\source\repos\ClearCaseDeskTool\ClearCaseDeskTool\obj\Debug\ClearCaseDeskTool.csprojResolveAssemblyReference.cache

@@ -1,0 +1,100 @@
+com.siemens.siesam.data.DataMain -> com.siemens.siesam.data.DataMain:
+    org.slf4j.Logger LOGGER -> LOGGER
+    java.util.List asyncItemList -> asyncItemList
+    java.util.Map itemResult -> itemResult
+    java.util.List currentThreadList -> currentThreadList
+    com.siemens.siesam.data.ServerInfo serverConfiguration -> serverConfiguration
+    org.openscada.opc.lib.da.Server OPCserver -> OPCserver
+    org.openscada.opc.lib.da.Group OPCGroup -> OPCGroup
+    java.util.Set itemSet -> itemSet
+    int threadCount -> threadCount
+    com.siemens.siesam.data.InterfaceImpl handler -> handler
+    com.siemens.mvp.thrift.thrift_client.DataInterface$Processor processor -> processor
+    java.lang.Integer opcClientThreadCursor -> opcClientThreadCursor
+    int thriftPort -> thriftPort
+    36:36:void <init>() -> <init>
+    65:101:boolean readProp() -> readProp
+    107:194:void main(java.lang.String[]) -> main
+    38:62:void <clinit>() -> <clinit>
+com.siemens.siesam.data.DistributeThread -> com.siemens.siesam.data.a:
+    java.util.List toBeDistributedList -> a
+    15:29:void <init>(java.util.List) -> <init>
+    34:57:void itemsToThreads() -> a
+com.siemens.siesam.data.InterfaceImpl -> com.siemens.siesam.data.InterfaceImpl:
+    org.slf4j.Logger LOGGER -> LOGGER
+    java.text.SimpleDateFormat sdf -> sdf
+    23:27:void <init>() -> <init>
+    30:41:com.siemens.mvp.thrift.thrift_client.ItemData asyncReadItem(java.lang.String) -> asyncReadItem
+    45:57:java.util.List asyncReadItems(java.util.List) -> asyncReadItems
+    65:89:java.util.List historicData(java.lang.String,long,long,java.lang.String) -> historicData
+    95:131:java.util.Map batchHistoricalData(java.util.List,long,long,java.lang.String) -> batchHistoricalData
+    137:155:java.lang.String changeItemID(java.lang.String,java.lang.String) -> changeItemID
+    161:177:java.lang.String deleteItem(java.lang.String) -> deleteItem
+    183:201:java.lang.String insertItem(java.lang.String,java.lang.String) -> insertItem
+    25:25:void <clinit>() -> <clinit>
+com.siemens.siesam.data.ItemState2ItemData -> com.siemens.siesam.data.b:
+    org.slf4j.Logger LOGGER -> LOGGER
+    org.openscada.opc.lib.da.ItemState originState -> b
+    com.siemens.mvp.thrift.thrift_client.ItemData afterTransform -> c
+    17:25:void <init>(org.openscada.opc.lib.da.ItemState) -> <init>
+    30:37:com.siemens.mvp.thrift.thrift_client.ItemData getItemData() -> getItemData
+    15:15:void <clinit>() -> <clinit>
+com.siemens.siesam.data.JdbcConnection -> com.siemens.siesam.data.c:
+    org.slf4j.Logger LOGGER -> LOGGER
+    com.siemens.siesam.data.JdbcConnection jdbcConnection -> d
+    com.mchange.v2.c3p0.ComboPooledDataSource cpds -> e
+    23:25:void <init>() -> <init>
+    32:32:com.siemens.siesam.data.JdbcConnection getInstance() -> getInstance
+    37:41:java.sql.Connection getConnection() -> getConnection
+    17:29:void <clinit>() -> <clinit>
+com.siemens.siesam.data.OpcAsyncRealTimeRead -> com.siemens.siesam.data.d:
+    org.slf4j.Logger LOGGER -> LOGGER
+    java.util.List threadItemList -> f
+    java.util.List alreadyAddedItemList -> g
+    com.siemens.siesam.data.OpcClient client -> h
+    org.openscada.opc.lib.da.AccessBase access -> i
+    24:35:void <init>(com.siemens.siesam.data.OpcClient) -> <init>
+    38:39:void addItem(java.lang.String) -> addItem
+    42:43:void addItems(java.util.List) -> a
+    47:55:void connect() -> connect
+    59:71:void createAccess() -> b
+    75:101:void addItemsToAccess(java.util.List) -> b
+    105:105:com.siemens.siesam.data.OpcClient getClient() -> getClient
+    110:111:void start() -> start
+    115:139:void run() -> run
+    22:22:void <clinit>() -> <clinit>
+com.siemens.siesam.data.OpcAsyncRealTimeRead$1 -> com.siemens.siesam.data.d$1:
+    java.lang.String val$currentItem -> j
+    com.siemens.siesam.data.OpcAsyncRealTimeRead this$0 -> k
+    78:78:void <init>(com.siemens.siesam.data.OpcAsyncRealTimeRead,java.lang.String) -> <init>
+    82:89:void changed(org.openscada.opc.lib.da.Item,org.openscada.opc.lib.da.ItemState) -> changed
+com.siemens.siesam.data.OpcClient -> com.siemens.siesam.data.e:
+    org.openscada.opc.lib.da.Server opcServer -> l
+    20:34:void <init>(com.siemens.siesam.data.ServerInfo) -> <init>
+    37:39:void connect() -> connect
+    42:42:org.openscada.opc.lib.da.Server getOpcServer() -> getOpcServer
+com.siemens.siesam.data.Result2ItemDataList -> com.siemens.siesam.data.f:
+    org.slf4j.Logger LOGGER -> LOGGER
+    16:16:void <init>() -> <init>
+    22:64:java.util.List changeResult2ItemData(java.sql.ResultSet) -> a
+    18:18:void <clinit>() -> <clinit>
+com.siemens.siesam.data.ServerInfo -> com.siemens.siesam.data.g:
+    java.lang.String host -> host
+    java.lang.String domain -> domain
+    java.lang.String username -> username
+    java.lang.String password -> password
+    java.lang.String clsid -> m
+    java.lang.String progid -> n
+    7:7:void <init>() -> <init>
+    18:18:java.lang.String getDomain() -> getDomain
+    22:23:void setDomain(java.lang.String) -> setDomain
+    26:26:java.lang.String getHost() -> getHost
+    30:31:void setHost(java.lang.String) -> setHost
+    34:34:java.lang.String getUsername() -> getUsername
+    38:39:void setUsername(java.lang.String) -> setUsername
+    42:42:java.lang.String getPassword() -> getPassword
+    46:47:void setPassword(java.lang.String) -> setPassword
+    50:50:java.lang.String getClsid() -> getClsid
+    54:55:void setClsid(java.lang.String) -> setClsid
+    58:58:java.lang.String getProgid() -> getProgid
+    62:63:void setProgid(java.lang.String) -> setProgid

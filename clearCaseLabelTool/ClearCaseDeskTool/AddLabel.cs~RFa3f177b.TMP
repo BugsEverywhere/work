@@ -1,0 +1,126 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+
+namespace ClearCaseDeskTool
+{
+    class AddLabel : CommandCaller
+    {
+        Dictionary<string, string> nameDirectoryMap;
+
+        public AddLabel(Dictionary<string, string> map) {
+
+            nameDirectoryMap = map;
+
+        }
+
+        async public void labelOn() {
+
+            Dictionary<string, string> filesVersionResultMap = await getVersionResultMap();
+
+
+
+
+        }
+
+        async public Task<Dictionary<string, string>> getVersionResultMap() {
+
+            Process process = new Process();
+
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.FileName = "C:\\Program Files (x86)\\IBM\\RationalSDLC\\ClearCase\\bin\\cleartool.exe";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+
+            Dictionary<string, string> filesVersionResultMap = new Dictionary<string, string>();
+
+            foreach (var singleFileNameDirectory in nameDirectoryMap)
+            {
+
+                process.Start();
+
+                string result;
+
+                List<string> commandLines = new List<string>();
+
+                commandLines.Add("cd " + singleFileNameDirectory.Value);
+
+                commandLines.Add("lsvtree " + singleFileNameDirectory.Key);
+
+                commandLines.Add("exit");
+
+                result = await RunSingleCmdLineWithResult(commandLines, process);
+
+                filesVersionResultMap.Add(singleFileNameDirectory.Key, result);
+
+                process.Close();
+            }
+
+            return filesVersionResultMap;
+
+        }
+
+
+        public string getCurrentVersionLabel(Dictionary<string,string> filesVersionResultMap) {
+
+            foreach (var singleVersionTree in filesVersionResultMap)
+            {
+
+                string[] labelArray = singleVersionTree.Value.Split('\r');
+
+                string lastVersionLabelWholeLine = labelArray[labelArray.Length - 3];
+
+                string[] lastVersionLabelArray = lastVersionLabelWholeLine.Split(new char[] { '\\', '\\' })[2].Split(' ');
+
+                string lastVersionLabel = null;
+
+                if (lastVersionLabelArray.Length >= 1)
+                {
+
+                    lastVersionLabel = lastVersionLabelArray[1];
+
+                }
+
+                string currentVersionTypeName = null;
+                string currentVersionNum = null;
+
+                if (lastVersionLabel != null)
+                {
+
+                    if (lastVersionLabel.Contains("(") || lastVersionLabel.Contains(")"))
+                    {
+
+                        lastVersionLabel = lastVersionLabel.Replace("(", "");
+                        lastVersionLabel = lastVersionLabel.Replace(")", "");
+
+                    }
+
+                    currentVersionTypeName = lastVersionLabel.Split('_')[0];
+
+                    string labelVersionNum = lastVersionLabel.Split('_')[1];
+
+                    string[] labelVersionNumArray = labelVersionNum.Split('.');
+
+                    float currentSubVersion = float.Parse(labelVersionNumArray[labelVersionNumArray.Length-1]);
+
+                    currentSubVersion = currentSubVersion + 1;
+
+                }
+
+
+
+
+
+            }
+
+
+        }
+
+
+
+    }
+}

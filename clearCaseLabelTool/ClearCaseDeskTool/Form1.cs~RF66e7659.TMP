@@ -1,0 +1,96 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace ClearCaseDeskTool
+{
+    public partial class Form1 : Form
+    {
+        public string localOperatePath;
+
+        public string localCopyPath;
+
+        public string targetFolderPath;
+
+        public Dictionary<string, string> fileNamePathMap = new Dictionary<String, String>();
+
+        private Dictionary<string, string> fileNameDirectoryMap = new Dictionary<string, string>();
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Browse_Click(object sender, EventArgs e)
+        {
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                foreach (string singleFileFullPath in openFileDialog.FileNames)
+                {
+
+                    fileNamePathMap.Add(System.IO.Path.GetFileName(singleFileFullPath), singleFileFullPath);
+
+                    listView1.
+
+                }
+                
+            }
+
+        }
+
+        private void selectLocalOriginalPath_Click(object sender, EventArgs e)
+        {
+
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+
+                localCopyPath = folderBrowserDialog.SelectedPath;
+
+                localOperatePath = Path.GetDirectoryName(localCopyPath);
+
+            }
+        }
+
+
+        private void select_target_folder_button_Click(object sender, EventArgs e)
+        {
+
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK) {
+
+                targetFolderPath = folderBrowserDialog.SelectedPath;
+
+            }
+
+        }
+
+        private void encriptButton_Click(object sender, EventArgs e)
+        {
+            Encriptor encriptor = new Encriptor(localCopyPath, localOperatePath, targetFolderPath, fileNamePathMap);
+
+            encriptor.CopyFiles2Local();
+
+            this.fileNamePathMap.Clear();
+
+            //===================todo:call encript here
+
+
+
+
+        }
+    }
+}

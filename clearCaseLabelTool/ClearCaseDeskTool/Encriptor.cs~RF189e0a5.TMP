@@ -1,0 +1,127 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace ClearCaseDeskTool
+{
+    class Encriptor : CommandCaller 
+    {
+
+        private string localOriginalPath;
+
+        private string localOperatePath;
+
+        private string targetProPath;
+
+        private Dictionary<string, string> fileNamePathMap;
+
+        public Encriptor(string originalPath,string operatePath,string targetPath,Dictionary<string,string> namePathMap) {
+
+            localOriginalPath = originalPath;
+
+            localOperatePath = operatePath;
+
+            targetProPath = targetPath;
+
+            fileNamePathMap = namePathMap;
+
+        }
+
+        public void CopyFiles2Local() {
+
+            foreach (var singleFileNamePath in fileNamePathMap)
+            {
+                FileInfo fileInfo = new FileInfo(singleFileNamePath.Value);
+
+                fileInfo.CopyTo(localOriginalPath+'\\'+singleFileNamePath.Key,true);
+
+            }
+
+        }
+
+        public void CopyFiles2ProductEnvironment() {
+
+            List<string> distinctFileList = CompareFolders(localOriginalPath, localOperatePath + "\\pmllib");
+
+
+
+            if (localOperatePath!=null) {
+
+                string[] fileFullPaths = Directory.GetFiles(localOperatePath + "\\pmllib");
+
+                foreach (string singlePath in fileFullPaths)
+                {
+                    FileInfo fileInfo = new FileInfo(singlePath);
+
+                    fileInfo.CopyTo(targetProPath + "\\" + Path.GetFileName(singlePath));
+                }
+
+            }
+         
+        }
+        
+        async public void EncriptApply() {
+
+            Process process = new Process();
+
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.Start();
+
+            if (localOperatePath != null && localOriginalPath != null)
+            {
+                List<string> cmdLines = new List<string>();
+
+                cmdLines.Add(localOperatePath + "\\" + "pmlencrypt.exe -pmllib " + localOriginalPath + ' ' + localOperatePath + "\\pmllib");
+
+                await RunSingleCmdLineWithResult(cmdLines, process);
+            }
+
+            process.Close();
+            
+        }
+
+        public List<string> CompareFolders(string originalFolder, string newFolder) {
+
+            DirectoryInfo oldFolderDirectoryInfo = new DirectoryInfo(originalFolder);
+            DirectoryInfo newFolderDirectoryInfo = new DirectoryInfo(newFolder);
+
+            List<string> differentFilePathList = new List<string>();
+
+            FileInfo[] oldFolderFileInfoArray = oldFolderDirectoryInfo.GetFiles("*", SearchOption.AllDirectories);
+            FileInfo[] newFolderFileInfoArray = newFolderDirectoryInfo.GetFiles("*", SearchOption.AllDirectories);
+
+            Dictionary<string,string> oldFolderFileNameFullPathMap = new Dictionary<string, string>();
+            Dictionary<string,string> newFolderFileNameFullPathMap = new Dictionary<string, string>();
+
+
+            foreach (FileInfo singleFileInfo in oldFolderFileInfoArray) {
+                oldFolderFileNameFullPathMap.Add(singleFileInfo.Name, singleFileInfo.FullName);
+            }
+
+            foreach (FileInfo singleFileInfo in newFolderFileInfoArray) {
+                newFolderFileNameFullPathMap.Add(singleFileInfo.Name, singleFileInfo.FullName);
+            }
+
+            //store the paths of all the distinct files into differentFilePathList
+            foreach (var singleEntry in oldFolderFileNameFullPathMap) {
+                if (!newFolderFileNameFullPathMap.ContainsKey(singleEntry.Key)) {
+                    differentFilePathList.Add(singleEntry.Value);
+                }
+            }
+
+            return differentFilePathList;
+
+        }
+
+    }
+}

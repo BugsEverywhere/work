@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ClearCaseDeskTool
+{
+    class CommandCaller
+    {
+
+        public CommandCaller() {
+
+        }
+
+        public Task<string> RunSingleCmdLineWithResult(List<string> cmd,Process cmdExeProcess)
+        {
+
+            return Task.Run(() =>
+            {
+                cmdExeProcess.StandardInput.WriteLine("cd " + AddLabel.folderPath);
+                cmdExeProcess.StandardInput.WriteLine("exit");
+                string outStr = cmdExeProcess.StandardOutput.ReadToEnd();
+                return outStr;
+            }); 
+        }
+    }
+}
